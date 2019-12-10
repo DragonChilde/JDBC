@@ -55,82 +55,82 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="JUnit.CustomerForQuery.selectCustomerById">
-    <configuration name="CustomerForQuery.selectCustomerById" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="JUnit.dbcpTest.getConnection2">
+    <configuration name="TransactionTest.testTransactionSelect" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="JDBC" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.jdb2.preparedstatement.crud.*" />
+          <option name="PATTERN" value="com.jdbc5.transaction.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="com.jdb2.preparedstatement.crud" />
-      <option name="MAIN_CLASS_NAME" value="com.jdb2.preparedstatement.crud.CustomerForQuery" />
-      <option name="METHOD_NAME" value="selectCustomerById" />
+      <option name="PACKAGE_NAME" value="com.jdbc5.transaction" />
+      <option name="MAIN_CLASS_NAME" value="com.jdbc5.transaction.TransactionTest" />
+      <option name="METHOD_NAME" value="testTransactionSelect" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Exercise.test01" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="c3p0Test.getConnection1" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="JDBC" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.jdbc3.test.*" />
+          <option name="PATTERN" value="com.jdbc6.connection.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="com.jdbc3.test" />
-      <option name="MAIN_CLASS_NAME" value="com.jdbc3.test.Exercise" />
-      <option name="METHOD_NAME" value="test01" />
+      <option name="PACKAGE_NAME" value="com.jdbc6.connection" />
+      <option name="MAIN_CLASS_NAME" value="com.jdbc6.connection.c3p0Test" />
+      <option name="METHOD_NAME" value="getConnection1" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="OrderForQuery.testCustomerForQuery" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="c3p0Test.getConnection2" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="JDBC" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.jdb2.preparedstatement.crud.*" />
+          <option name="PATTERN" value="com.jdbc6.connection.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="com.jdb2.preparedstatement.crud" />
-      <option name="MAIN_CLASS_NAME" value="com.jdb2.preparedstatement.crud.OrderForQuery" />
-      <option name="METHOD_NAME" value="testCustomerForQuery" />
+      <option name="PACKAGE_NAME" value="com.jdbc6.connection" />
+      <option name="MAIN_CLASS_NAME" value="com.jdbc6.connection.c3p0Test" />
+      <option name="METHOD_NAME" value="getConnection2" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="PreparedStatementQueryTest.getInstanceForSelectTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="dbcpTest.getConnction1" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="JDBC" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.jdb2.preparedstatement.crud.*" />
+          <option name="PATTERN" value="com.jdbc6.connection.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="com.jdb2.preparedstatement.crud" />
-      <option name="MAIN_CLASS_NAME" value="com.jdb2.preparedstatement.crud.PreparedStatementQueryTest" />
-      <option name="METHOD_NAME" value="getInstanceForSelectTest" />
+      <option name="PACKAGE_NAME" value="com.jdbc6.connection" />
+      <option name="MAIN_CLASS_NAME" value="com.jdbc6.connection.dbcpTest" />
+      <option name="METHOD_NAME" value="getConnction1" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="PreparedStatementQueryTest.getInstanceForSelectToListTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="dbcpTest.getConnection2" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="JDBC" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.jdb2.preparedstatement.crud.*" />
+          <option name="PATTERN" value="com.jdbc6.connection.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="com.jdb2.preparedstatement.crud" />
-      <option name="MAIN_CLASS_NAME" value="com.jdb2.preparedstatement.crud.PreparedStatementQueryTest" />
-      <option name="METHOD_NAME" value="getInstanceForSelectToListTest" />
+      <option name="PACKAGE_NAME" value="com.jdbc6.connection" />
+      <option name="MAIN_CLASS_NAME" value="com.jdbc6.connection.dbcpTest" />
+      <option name="METHOD_NAME" value="getConnection2" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -138,11 +138,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.CustomerForQuery.selectCustomerById" />
-        <item itemvalue="JUnit.Exercise.test01" />
-        <item itemvalue="JUnit.PreparedStatementQueryTest.getInstanceForSelectToListTest" />
-        <item itemvalue="JUnit.PreparedStatementQueryTest.getInstanceForSelectTest" />
-        <item itemvalue="JUnit.OrderForQuery.testCustomerForQuery" />
+        <item itemvalue="JUnit.dbcpTest.getConnection2" />
+        <item itemvalue="JUnit.c3p0Test.getConnection2" />
+        <item itemvalue="JUnit.dbcpTest.getConnction1" />
+        <item itemvalue="JUnit.c3p0Test.getConnection1" />
+        <item itemvalue="JUnit.TransactionTest.testTransactionSelect" />
       </list>
     </recent_temporary>
   </component>
@@ -158,6 +158,7 @@
       <updated>1574920827606</updated>
       <workItem from="1574920835804" duration="9217000" />
       <workItem from="1575450767703" duration="27529000" />
+      <workItem from="1575856721912" duration="17500000" />
     </task>
     <servers />
   </component>

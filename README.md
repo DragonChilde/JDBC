@@ -1101,6 +1101,119 @@ JDBC的批量处理语句包括下面三个方法：
 
 ## 高效的批量插入 ##
 
+### 批量插入(使用PreparedStatement) ###
+
+		  @Test
+	    public void batch1() throws Exception
+	    {
+	
+	        Connection connection = null;
+	        PreparedStatement preparedStatement = null;
+	        try {
+	            long start = System.currentTimeMillis();
+	            connection = JDBCUtils.getConnection();
+	            preparedStatement = connection.prepareStatement("insert into goods (`name`) values (?)");
+	            for (int i = 1; i <= 20000; i++) {
+	                preparedStatement.setObject(1, i + "");
+	                preparedStatement.executeUpdate();
+	            }
+	            long end = System.currentTimeMillis();
+	            System.out.println("花费的时间为：" + (end - start));
+				/**花费的时间为：244361**/
+	        } catch (Exception e)
+	        {
+	            e.printStackTrace();
+	        }finally {
+	            JDBCUtils.closeResource(connection,preparedStatement);
+	        }
+	    }
+
+### 指量插入(addBatch()、executeBatch()、clearBatch()) ###
+
+		/*
+		 * 批量插入的方式：
+		 * 1.addBatch()、executeBatch()、clearBatch()
+		 * 2.mysql服务器默认是关闭批处理的，我们需要通过一个参数，让mysql开启批处理的支持。
+		 * 		 ?rewriteBatchedStatements=true 写在配置文件的url后面
+		 * 3.使用更新的mysql 驱动：mysql-connector-java-5.1.37-bin.jar
+		 */
+		@Test
+	    public void batch2() throws Exception
+	    {
+	
+	        Connection connection = null;
+	        PreparedStatement preparedStatement = null;
+	        try {
+	            long start = System.currentTimeMillis();
+	            connection = JDBCUtils.getConnection();
+	            preparedStatement = connection.prepareStatement("insert into goods (`name`) values (?)");
+	            for (int i = 1; i <= 20000; i++) {
+	                preparedStatement.setObject(1, i + "");
+					  //1."攒"sql
+	               preparedStatement.addBatch();
+	
+	               if (i%500 == 0){
+						 //2.执行batch
+	                   preparedStatement.executeBatch();
+						 //3.清空batch
+	                   preparedStatement.clearBatch();
+	               }
+	
+	            }
+	            long end = System.currentTimeMillis();
+	            System.out.println("花费的时间为：" + (end - start));
+				/**
+					20000:花费的时间为：1478
+					100000:花费的时间为：5347
+				**/
+	        } catch (Exception e)
+	        {
+	            e.printStackTrace();
+	        }finally {
+	            JDBCUtils.closeResource(connection,preparedStatement);
+	        }
+	    }
+
+### 批量插入(设置连接不允许自动提交数据) ###
+
+		@Test
+	    public void batch3() throws Exception
+	    {
+	
+	        Connection connection = null;
+	        PreparedStatement preparedStatement = null;
+	        try {
+	            long start = System.currentTimeMillis();
+	            connection = JDBCUtils.getConnection();
+	            //设置不允许自动提交数据
+	            connection.setAutoCommit(false);
+	            preparedStatement = connection.prepareStatement("insert into goods (`name`) values (?)");
+	            for (int i = 1; i <= 100000; i++) {
+	                preparedStatement.setObject(1, i + "");
+	                //1."攒"sql
+	                preparedStatement.addBatch();
+	
+	                if (i%500 == 0){
+	                    //2.执行batch
+	                    preparedStatement.executeBatch();
+	                    //3.清空batch
+	                    preparedStatement.clearBatch();
+	                }
+	            }
+	            connection.commit();
+	
+	            long end = System.currentTimeMillis();
+	            System.out.println("花费的时间为：" + (end - start));
+				/**100000:花费的时间为：4684**/
+	        } catch (Exception e)
+	        {
+	            e.printStackTrace();
+	        }finally {
+	            JDBCUtils.closeResource(connection,preparedStatement);
+	        }
+	
+	    }
+
 # 数据库事务 #
 
 ## 数据库事务介绍 ##
@@ -1124,6 +1237,97 @@ JDBC的批量处理语句包括下面三个方法：
   - 在出现异常时，调用 **rollback();** 方法回滚事务
 
   > 若此时 Connection 没有被关闭，还可能被重复使用，则需要恢复其自动提交状态 setAutoCommit(true)。尤其是在使用数据库连接池技术时，执行close()方法前，建议恢复自动提交状态。
+
+
+	/*
+	 * 1.什么叫数据库事务？
+	 * 事务：一组逻辑操作单元,使数据从一种状态变换到另一种状态。
+	 * 		> 一组逻辑操作单元：一个或多个DML操作。
+	 *
+	 * 2.事务处理的原则：保证所有事务都作为一个工作单元来执行，即使出现了故障，都不能改变这种执行方式。
+	 * 当在一个事务中执行多个操作时，要么所有的事务都被提交(commit)，那么这些修改就永久地保存
+	 * 下来；要么数据库管理系统将放弃所作的所有修改，整个事务回滚(rollback)到最初状态。
+	 *
+	 * 3.数据一旦提交，就不可回滚
+	 *
+	 * 4.哪些操作会导致数据的自动提交？
+	 * 		>DDL操作一旦执行，都会自动提交。
+	 * 			>set autocommit = false 对DDL操作失效
+	 * 		>DML默认情况下，一旦执行，就会自动提交。
+	 * 			>我们可以通过set autocommit = false的方式取消DML操作的自动提交。
+	 * 		>默认在关闭连接时，会自动的提交数据
+	 */
+	/**
+	 * @author Lee
+	 * @create 2019/12/9 15:22
+	 */
+	public class TransactionTest {
+	    @Test
+	    public void testUpdateWithTx() throws Exception
+	    {
+	        Connection connection = null;
+	        try {
+	            connection = JDBCUtils.getConnection();
+	            System.out.println(connection.getAutoCommit()); //打印可看到默认是true默认提交
+	            //1.取消数据的自动提交
+	            connection.setAutoCommit(false);
+	            String sql1 = "update user_table set balance = balance + 200 where user =?";
+	            updateSql(connection,sql1,"AA");
+	
+	            //模拟网络异常
+	            System.out.println(10/0);
+	
+	            String sql2 = "update user_table set balance = balance - 200 where user =?";
+	            updateSql(connection,sql2,"BB");
+	
+	            //2.提交数据
+	            connection.commit();
+	        }catch (Exception e)
+	        {
+	            e.printStackTrace();
+	            try{
+	                //3.回滚数据
+	                connection.rollback();
+	            }catch (Exception e1 ){
+	                e1.printStackTrace();
+	            }
+	        } finally {
+	            try {
+	                //修改其为自动提交数据
+	                //主要针对于使用数据库连接池的使用
+	                connection.setAutoCommit(true);
+	            } catch (Exception e)
+	            {
+	                e.printStackTrace();
+	            }
+	            JDBCUtils.closeResource(connection,null);
+	        }
+	
+	
+	    }
+	
+	    // 通用的增删改操作
+	    private int updateSql(Connection connection, String sql,Object... args)// sql中占位符的个数与可变形参的长度相同！
+	    {
+	        PreparedStatement preparedStatement = null;
+	        try {
+	            // 1.预编译sql语句，返回PreparedStatement的实例
+	             preparedStatement = connection.prepareStatement(sql);
+	            // 2.填充占位符
+	            for (int i = 0; i < args.length; i++) {
+	                preparedStatement.setObject(i+1,args[i]);
+	            }
+	            // 3.执行
+	           return preparedStatement.executeUpdate();
+	        } catch (Exception e){
+	            e.printStackTrace();
+	        } finally {
+	            // 4.资源的关闭
+	            JDBCUtils.closeResource(null,preparedStatement);
+	        }
+	        return 0;
+	    }
+	}
 
 ## 事务的ACID属性 ##
 
@@ -1189,4 +1393,276 @@ JDBC的批量处理语句包括下面三个方法：
 		    
 		     #给tom用户使用本地命令行方式，授予atguigudb这个库下的所有表的插删改查的权限。
 		    grant select,insert,delete,update on atguigudb.* to tom@localhost identified by 'abc123'; 
+
+代码实现:
+
+    @Test
+    public void testTransactionSelect() throws  Exception
+    {
+        Connection connection = JDBCUtils.getConnection();
+        //获取当前连接的隔离级别
+        System.out.println(connection.getTransactionIsolation());
+        //取消自动提交数据
+        connection.setAutoCommit(false);
+        //设置数据库的隔离级别：
+        connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+        String sql = "select user ,password,balance from user_table where user = ?";
+        User user = getInstanceForSelectByCondition(connection,User.class, sql, "AA");
+        System.out.println(user);
+
+    }
+
+    @Test
+    public void testTransactionUpdate() throws Exception
+    {
+        Connection connection = JDBCUtils.getConnection();
+        //取消自动提交数据
+        connection.setAutoCommit(false);
+        String sql = "update user_table set balance = balance + 200 where user =?";
+        updateSql(connection,sql,"AA");
+        Thread.sleep(10000);
+        connection.commit();
+        System.out.println("update success");
+    }
+
+- 执行更新操作未提交,这时执行读取操作,会发现读取到更新的值,这里代码实现了脏读,把隔离级别设置了读未提交
+- 代码设置的隔离级别只针对当前的连接有效,要实现全局操作都有效,必须在数据库里设置
     
+# DAO及相关实现类 (略)#
+
+# 数据库连接池 #
+
+## JDBC数据库连接池的必要性 ##
+
+- 在使用开发基于数据库的web程序时，传统的模式基本是按以下步骤
+	- **在主程序（如servlet、beans）中建立数据库连接**
+	- **进行sql操作**
+	- **断开数据库连接**
+
+- 这种模式开发，存在的问题:
+  - 普通的JDBC数据库连接使用 DriverManager 来获取，每次向数据库建立连接的时候都要将 Connection 加载到内存中，再验证用户名和密码(得花费0.05s～1s的时间)。需要数据库连接的时候，就向数据库要求一个，执行完成后再断开连接。这样的方式将会消耗大量的资源和时间。**数据库的连接资源并没有得到很好的重复利用。**若同时有几百人甚至几千人在线，频繁的进行数据库连接操作将占用很多的系统资源，严重的甚至会造成服务器的崩溃。
+  - **对于每一次数据库连接，使用完后都得断开。**否则，如果程序出现异常而未能关闭，将会导致数据库系统中的内存泄漏，最终将导致重启数据库。（回忆：何为Java的内存泄漏？）
+  - **这种开发不能控制被创建的连接对象数**，系统资源会被毫无顾及的分配出去，如连接过多，也可能导致内存泄漏，服务器崩溃。 
+
+## 数据库连接池技术 ##
+
+- 为解决传统开发中的数据库连接问题，可以采用数据库连接池技术。
+- **数据库连接池的基本思想**：就是为数据库连接建立一个“缓冲池”。预先在缓冲池中放入一定数量的连接，当需要建立数据库连接时，只需从“缓冲池”中取出一个，使用完毕之后再放回去。
+
+- **数据库连接池**负责分配、管理和释放数据库连接，它**允许应用程序重复使用一个现有的数据库连接，而不是重新建立一个**。
+- 数据库连接池在初始化时将创建一定数量的数据库连接放到连接池中，这些数据库连接的数量是由**最小数据库连接数来设定**的。无论这些数据库连接是否被使用，连接池都将一直保证至少拥有这么多的连接数量。连接池的**最大数据库连接数量**限定了这个连接池能占有的最大连接数，当应用程序向连接池请求的连接数超过最大连接数量时，这些请求将被加入到等待队列中。
+
+![](http://120.77.237.175:9080/photos/jdbc/15.png)
+
+- **工作原理：**
+
+![](http://120.77.237.175:9080/photos/jdbc/16.png)
+
+- **数据库连接池技术的优点**
+
+  **1. 资源重用**
+
+  由于数据库连接得以重用，避免了频繁创建，释放连接引起的大量性能开销。在减少系统消耗的基础上，另一方面也增加了系统运行环境的平稳性。
+
+  **2. 更快的系统反应速度**
+
+  数据库连接池在初始化过程中，往往已经创建了若干数据库连接置于连接池中备用。此时连接的初始化工作均已完成。对于业务请求处理而言，直接利用现有可用连接，避免了数据库连接初始化和释放过程的时间开销，从而减少了系统的响应时间
+
+  **3. 新的资源分配手段**
+
+  对于多应用共享同一数据库的系统而言，可在应用层通过数据库连接池的配置，实现某一应用最大可用数据库连接数的限制，避免某一应用独占所有的数据库资源
+
+  **4. 统一的连接管理，避免数据库连接泄漏**
+
+  在较为完善的数据库连接池实现中，可根据预先的占用超时设定，强制回收被占用连接，从而避免了常规数据库连接操作中可能出现的资源泄露
+
+## 多种开源的数据库连接池 ##
+
+- JDBC 的数据库连接池使用 javax.sql.DataSource 来表示，DataSource 只是一个接口，该接口通常由服务器(We
+- ic, WebSphere, Tomcat)提供实现，也有一些开源组织提供实现：
+  - **DBCP** 是Apache提供的数据库连接池。tomcat 服务器自带dbcp数据库连接池。**速度相对c3p0较快**，但因自身存在BUG，Hibernate3已不再提供支持。
+  - **C3P0** 是一个开源组织提供的一个数据库连接池，**速度相对较慢，稳定性还可以。**hibernate官方推荐使用
+  - **Proxool** 是sourceforge下的一个开源项目数据库连接池，有监控连接池状态的功能，**稳定性较c3p0差一点**
+  - **BoneCP** 是一个开源组织提供的数据库连接池，速度快
+  - **Druid** 是阿里提供的数据库连接池，据说是集DBCP 、C3P0 、Proxool 优点于一身的数据库连接池，但是速度不确定是否有BoneCP快
+- DataSource 通常被称为数据源，它包含连接池和连接池管理两个部分，习惯上也经常把 DataSource 称为连接池
+- **DataSource用来取代DriverManager来获取Connection，获取速度快，同时可以大幅度提高数据库访问速度。**
+- 特别注意：
+  - 数据源和数据库连接不同，数据源无需创建多个，它是产生数据库连接的工厂，因此**整个应用只需要一个数据源即可。**
+  - 当数据库访问结束后，程序还是像以前一样关闭数据库连接：conn.close(); 但conn.close()并没有关闭数据库的物理连接，它仅仅把数据库连接释放，归还给了数据库连接池。
+
+### C3P0数据库连接池 ###
+
+<a href="https://www.mchange.com/projects/c3p0/">官网直连</a>
+
+- 获取连接方式一
+
+		//使用C3P0数据库连接池的方式，获取数据库的连接：不推荐
+	    @Test
+	    public void getConnection1() throws Exception
+	    {
+	        //获取c3p0数据库连接池
+	        ComboPooledDataSource cpds = new ComboPooledDataSource();
+	        cpds.setDriverClass( "com.mysql.jdbc.Driver" );
+	        cpds.setJdbcUrl( "jdbc:mysql://120.77.237.175:9306/jdbc" );
+	        cpds.setUser("root");
+	        cpds.setPassword("123456");
+	
+	        //通过设置相关的参数，对数据库连接池进行管理：
+	        //设置初始时数据库连接池中的连接数
+	        cpds.setInitialPoolSize(10);
+	
+	        Connection connection = cpds.getConnection();
+	        System.out.println(connection);
+	
+	        //销毁c3p0数据库连接池(一般都不会销毁连接池)
+	        //DataSources.destroy( cpds );
+	    }
+
+- 获取连接方式二
+
+		//使用C3P0数据库连接池的配置文件方式，获取数据库的连接：推荐
+	    @Test
+	    public void getConnection2() throws Exception
+	    {
+	        ComboPooledDataSource cpds = new ComboPooledDataSource("myc3p0config");
+	        Connection connection = cpds.getConnection();
+	        System.out.println(connection);
+	    }
+
+	配置文件名为【c3p0-config.xml】
+	
+		<c3p0-config>
+		    <named-config name="myc3p0config">
+		        <!-- 提供获取连接的4个基本信息 -->
+		        <property name="driverClass">com.mysql.jdbc.Driver</property>
+		        <property name="jdbcUrl">jdbc:mysql://120.77.237.175:9306/jdbc</property>
+		        <property name="user">root</property>
+		        <property name="password">123456</property>
+		
+		        <!-- 进行数据库连接池管理的基本信息 -->
+		        <!-- 当数据库连接池中的连接数不够时，c3p0一次性向数据库服务器申请的连接数 -->
+		        <property name="acquireIncrement">5</property>
+		        <!-- c3p0数据库连接池中初始化时的连接数 -->
+		        <property name="initialPoolSize">10</property>
+		        <!-- c3p0数据库连接池维护的最少连接数 -->
+		        <property name="minPoolSize">10</property>
+		        <!-- c3p0数据库连接池维护的最多的连接数 -->
+		        <property name="maxPoolSize">100</property>
+		        <!-- c3p0数据库连接池最多维护的Statement的个数 -->
+		        <property name="maxStatements">50</property>
+		        <!-- 每个连接中可以最多使用的Statement的个数 -->
+		        <property name="maxStatementsPerConnection">2</property>
+		    </named-config>
+		</c3p0-config>
+
+### DBCP数据库连接池 ###
+
+- DBCP 是 Apache 软件基金组织下的开源连接池实现，该连接池依赖该组织下的另一个开源系统：Common-pool。如需使用该连接池实现，应在系统中增加如下两个 jar 文件：
+  - Commons-dbcp.jar：连接池的实现
+  - Commons-pool.jar：连接池实现的依赖库
+- **Tomcat 的连接池正是采用该连接池来实现的。**该数据库连接池既可以与应用服务器整合使用，也可由应用程序独立使用。
+- 数据源和数据库连接不同，数据源无需创建多个，它是产生数据库连接的工厂，因此整个应用只需要一个数据源即可。
+- 当数据库访问结束后，程序还是像以前一样关闭数据库连接：conn.close(); 但上面的代码并没有关闭数据库的物理连接，它仅仅把数据库连接释放，归还给了数据库连接池。
+- 配置属性说明
+
+		| 属性                       | 默认值 | 说明                                                         |
+		| -------------------------- | ------ | ------------------------------------------------------------ |
+		| initialSize                | 0      | 连接池启动时创建的初始化连接数量                             |
+		| maxActive                  | 8      | 连接池中可同时连接的最大的连接数                             |
+		| maxIdle                    | 8      | 连接池中最大的空闲的连接数，超过的空闲连接将被释放，如果设置为负数表示不限制 |
+		| minIdle                    | 0      | 连接池中最小的空闲的连接数，低于这个数量会被创建新的连接。该参数越接近maxIdle，性能越好，因为连接的创建和销毁，都是需要消耗资源的；但是不能太大。 |
+		| maxWait                    | 无限制 | 最大等待时间，当没有可用连接时，连接池等待连接释放的最大时间，超过该时间限制会抛出异常，如果设置-1表示无限等待 |
+		| poolPreparedStatements     | false  | 开启池的Statement是否prepared                                |
+		| maxOpenPreparedStatements  | 无限制 | 开启池的prepared 后的同时最大连接数                          |
+		| minEvictableIdleTimeMillis |        | 连接池中连接，在时间段内一直空闲， 被逐出连接池的时间        |
+		| removeAbandonedTimeout     | 300    | 超过时间限制，回收没有用(废弃)的连接                         |
+		| removeAbandoned            | false  | 超过removeAbandonedTimeout时间后，是否进 行没用连接（废弃）的回收 |
+
+### Druid（德鲁伊）数据库连接池 ###
+
+Druid是阿里巴巴开源平台上一个数据库连接池实现，它结合了C3P0、DBCP、Proxool等DB池的优点，同时加入了日志监控，可以很好的监控DB池连接和SQL的执行情况，可以说是针对监控而生的DB连接池，**可以说是目前最好的连接池之一。**
+
+
+- 详细配置参数：
+
+		| **配置**                      | **缺省** | **说明**                                                     |
+		| ----------------------------- | -------- | ------------------------------------------------------------ |
+		| name                          |          | 配置这个属性的意义在于，如果存在多个数据源，监控的时候可以通过名字来区分开来。   如果没有配置，将会生成一个名字，格式是：”DataSource-” +   System.identityHashCode(this) |
+		| url                           |          | 连接数据库的url，不同数据库不一样。例如：mysql :   jdbc:mysql://10.20.153.104:3306/druid2      oracle :   jdbc:oracle:thin:@10.20.149.85:1521:ocnauto |
+		| username                      |          | 连接数据库的用户名                                           |
+		| password                      |          | 连接数据库的密码。如果你不希望密码直接写在配置文件中，可以使用ConfigFilter。详细看这里：<https://github.com/alibaba/druid/wiki/%E4%BD%BF%E7%94%A8ConfigFilter> |
+		| driverClassName               |          | 根据url自动识别   这一项可配可不配，如果不配置druid会根据url自动识别dbType，然后选择相应的driverClassName(建议配置下) |
+		| initialSize                   | 0        | 初始化时建立物理连接的个数。初始化发生在显示调用init方法，或者第一次getConnection时 |
+		| maxActive                     | 8        | 最大连接池数量                                               |
+		| maxIdle                       | 8        | 已经不再使用，配置了也没效果                                 |
+		| minIdle                       |          | 最小连接池数量                                               |
+		| maxWait                       |          | 获取连接时最大等待时间，单位毫秒。配置了maxWait之后，缺省启用公平锁，并发效率会有所下降，如果需要可以通过配置useUnfairLock属性为true使用非公平锁。 |
+		| poolPreparedStatements        | false    | 是否缓存preparedStatement，也就是PSCache。PSCache对支持游标的数据库性能提升巨大，比如说oracle。在mysql下建议关闭。 |
+		| maxOpenPreparedStatements     | -1       | 要启用PSCache，必须配置大于0，当大于0时，poolPreparedStatements自动触发修改为true。在Druid中，不会存在Oracle下PSCache占用内存过多的问题，可以把这个数值配置大一些，比如说100 |
+		| validationQuery               |          | 用来检测连接是否有效的sql，要求是一个查询语句。如果validationQuery为null，testOnBorrow、testOnReturn、testWhileIdle都不会其作用。 |
+		| testOnBorrow                  | true     | 申请连接时执行validationQuery检测连接是否有效，做了这个配置会降低性能。 |
+		| testOnReturn                  | false    | 归还连接时执行validationQuery检测连接是否有效，做了这个配置会降低性能 |
+		| testWhileIdle                 | false    | 建议配置为true，不影响性能，并且保证安全性。申请连接的时候检测，如果空闲时间大于timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有效。 |
+		| timeBetweenEvictionRunsMillis |          | 有两个含义： 1)Destroy线程会检测连接的间隔时间2)testWhileIdle的判断依据，详细看testWhileIdle属性的说明 |
+		| numTestsPerEvictionRun        |          | 不再使用，一个DruidDataSource只支持一个EvictionRun           |
+		| minEvictableIdleTimeMillis    |          |                                                              |
+		| connectionInitSqls            |          | 物理连接初始化的时候执行的sql                                |
+		| exceptionSorter               |          | 根据dbType自动识别   当数据库抛出一些不可恢复的异常时，抛弃连接 |
+		| filters                       |          | 属性类型是字符串，通过别名的方式配置扩展插件，常用的插件有：   监控统计用的filter:stat日志用的filter:log4j防御sql注入的filter:wall |
+		| proxyFilters                  |          | 类型是List，如果同时配置了filters和proxyFilters，是组合关系，并非替换关系 |
+
+
+# Apache-DBUtils实现CRUD操作 #
+
+## Apache-DBUtils简介 ##
+
+- commons-dbutils 是 Apache 组织提供的一个开源 JDBC工具类库，它是对JDBC的简单封装，学习成本极低，并且使用dbutils能极大简化jdbc编码的工作量，同时也不会影响程序的性能。
+
+- API介绍：
+  - org.apache.commons.dbutils.QueryRunner
+  - org.apache.commons.dbutils.ResultSetHandler
+  - 工具类：org.apache.commons.dbutils.DbUtils   
+- API包说明：
+
+![](http://120.77.237.175:9080/photos/jdbc/17.png)
+
+## 主要API的使用 ##
+
+### DbUtils ###
+
+- DbUtils ：提供如关闭连接、装载JDBC驱动程序等常规工作的工具类，里面的所有方法都是静态的。主要方法如下：
+  - **public static void close(…) throws java.sql.SQLException**：　DbUtils类提供了三个重载的关闭方法。这些方法检查所提供的参数是不是NULL，如果不是的话，它们就关闭Connection、Statement和ResultSet。
+  - public static void closeQuietly(…): 这一类方法不仅能在Connection、Statement和ResultSet为NULL情况下避免关闭，还能隐藏一些在程序中抛出的SQLEeception。
+  - public static void commitAndClose(Connection conn)throws SQLException： 用来提交连接的事务，然后关闭连接
+  - public static void commitAndCloseQuietly(Connection conn)： 用来提交连接，然后关闭连接，并且在关闭连接时不抛出SQL异常。 
+  - public static void rollback(Connection conn)throws SQLException：允许conn为null，因为方法内部做了判断
+  - public static void rollbackAndClose(Connection conn)throws SQLException
+  - rollbackAndCloseQuietly(Connection)
+  - public static boolean loadDriver(java.lang.String driverClassName)：这一方装载并注册JDBC驱动程序，如果成功就返回true。使用该方法，你不需要捕捉这个异常ClassNotFoundException。
+
+### QueryRunner类 ###
+
+- **该类简单化了SQL查询，它与ResultSetHandler组合在一起使用可以完成大部分的数据库操作，能够大大减少编码量。**
+
+- QueryRunner类提供了两个构造器：
+  - 默认的构造器
+  - 需要一个 javax.sql.DataSource 来作参数的构造器
+
+- QueryRunner类的主要方法：
+  - **更新**
+	    - public int update(Connection conn, String sql, Object... params) throws SQLException:用来执行一个更新（插入、更新或删除）操作。
+	    -  ......
+  - **插入**
+	    - public <T> T insert(Connection conn,String sql,ResultSetHandler<T> rsh, Object... params) throws SQLException：只支持INSERT语句，其中 rsh - The handler used to create the result object from the ResultSet of auto-generated keys.  返回值: An object generated by the handler.即自动生成的键值
+	    - ....
+  - **批处理**
+	    - public int[] batch(Connection conn,String sql,Object[][] params)throws SQLException： INSERT, UPDATE, or DELETE语句
+	    - public <T> T insertBatch(Connection conn,String sql,ResultSetHandler<T> rsh,Object[][] params)throws SQLException：只支持INSERT语句
+	    - .....
+  - **查询**
+	    - public Object query(Connection conn, String sql, ResultSetHandler rsh,Object... params) throws SQLException：执行一个查询操作，在这个查询中，对象数组中的每个元素值被用来作为查询语句的置换参数。该方法会自行处理 PreparedStatement 和 ResultSet 的创建和关闭。
+	    - ...... 
+
+
+### 9.2.3 ResultSetHandler接口及实现类 ###
