@@ -20,13 +20,13 @@ public class dbcpTest {
     @Test
     public void getConnction1() throws Exception
     {
+        //创建了DBCP的数据库连接池
         BasicDataSource dataSource = new BasicDataSource();
+        //设置基本信息
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");
         dataSource.setUrl("jdbc:mysql://120.77.237.175:9306/jdbc");
         dataSource.setUsername("root");
         dataSource.setPassword("123456");
-
-
         //还可以设置其他涉及数据库连接池管理的相关属性：
         dataSource.setInitialSize(10);
         //。。。

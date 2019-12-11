@@ -1556,6 +1556,16 @@ JDBC的批量处理语句包括下面三个方法：
 		    </named-config>
 		</c3p0-config>
 
+- 通用连接
+
+		 //数据库连接池只需提供一个即可
+	    private static  ComboPooledDataSource cpds = new ComboPooledDataSource("myc3p0config");
+	    public static Connection getC3P0Connection() throws Exception
+	    {
+	        Connection connection = cpds.getConnection();
+	        return connection;
+	    }
+
 ### DBCP数据库连接池 ###
 
 - DBCP 是 Apache 软件基金组织下的开源连接池实现，该连接池依赖该组织下的另一个开源系统：Common-pool。如需使用该连接池实现，应在系统中增加如下两个 jar 文件：
@@ -1578,6 +1588,72 @@ JDBC的批量处理语句包括下面三个方法：
 		| minEvictableIdleTimeMillis |        | 连接池中连接，在时间段内一直空闲， 被逐出连接池的时间        |
 		| removeAbandonedTimeout     | 300    | 超过时间限制，回收没有用(废弃)的连接                         |
 		| removeAbandoned            | false  | 超过removeAbandonedTimeout时间后，是否进 行没用连接（废弃）的回收 |
+
+- 连接方式一
+
+		//方式一：不推荐
+		  @Test
+	    public void getConnction1() throws Exception
+	    {
+	        //创建了DBCP的数据库连接池
+	        BasicDataSource dataSource = new BasicDataSource();
+	        //设置基本信息
+	        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+	        dataSource.setUrl("jdbc:mysql://120.77.237.175:9306/jdbc");
+	        dataSource.setUsername("root");
+	        dataSource.setPassword("123456");
+	        //还可以设置其他涉及数据库连接池管理的相关属性：
+	        dataSource.setInitialSize(10);
+	        //。。。
+	
+	        Connection connection = dataSource.getConnection();
+	        System.out.println(connection);
+	    }
+
+- 连接方式二
+
+		//方式二：推荐：使用配置文件
+		 @Test
+	    public void getConnection2() throws Exception
+	    {
+	        Properties properties = new Properties();
+	        InputStream stream = this.getClass().getClassLoader().getResourceAsStream("dbcp-config.properties");
+	        properties.load(stream);
+	        BasicDataSource dataSource = BasicDataSourceFactory.createDataSource(properties);
+	        Connection connection = dataSource.getConnection();
+	        System.out.println(connection);
+	    }
+
+	配置文件名为【c3p0-config.xml】
+
+		driverClassName=com.mysql.jdbc.Driver
+		url=jdbc:mysql://120.77.237.175:9306/jdbc?serverTimezone=GMT&useSSL=false&characterEncoding=utf-8&rewriteBatchedStatements=true
+		username=root
+		password=123456
+		
+		initialSize=10
+
+- 通用连接
+
+	    //创建一个DBCP数据库连接池
+	    private static  BasicDataSource dataSource;
+	    static {
+	        try {
+	            Properties properties = new Properties();
+	            InputStream stream = Class.class.getClassLoader().getResourceAsStream("dbcp-config.properties");
+	            properties.load(stream);
+	            dataSource = BasicDataSourceFactory.createDataSource(properties);
+	        } catch (Exception e)
+	        {
+	            e.printStackTrace();
+	        }
+	
+	    }
+	    public static Connection getDBCPConnection() throws Exception
+	    {
+	        Connection connection = dataSource.getConnection();
+	       return connection;
+	    }
 
 ### Druid（德鲁伊）数据库连接池 ###
 
@@ -1612,6 +1688,52 @@ Druid是阿里巴巴开源平台上一个数据库连接池实现，它结合了
 		| filters                       |          | 属性类型是字符串，通过别名的方式配置扩展插件，常用的插件有：   监控统计用的filter:stat日志用的filter:log4j防御sql注入的filter:wall |
 		| proxyFilters                  |          | 类型是List，如果同时配置了filters和proxyFilters，是组合关系，并非替换关系 |
 
+- 连接方式
+
+	    @Test
+	    public void getConnection1() throws Exception
+	    {
+	        Properties properties = new Properties();
+	        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("dbcp-config.properties");
+	        properties.load(stream);
+	
+	        DataSource dataSource = DruidDataSourceFactory.createDataSource(properties);
+	        Connection connection = dataSource.getConnection();
+	        System.out.println(connection);
+	    }
+
+	配置文件名为【druid-config.xml】
+
+		driverClassName=com.mysql.jdbc.Driver
+		url=jdbc:mysql://120.77.237.175:9306/jdbc?serverTimezone=GMT&useSSL=false&characterEncoding=utf-8&rewriteBatchedStatements=true
+		username=root
+		password=123456
+
+		initialSize=10
+		maxActive=10
+
+- 通用连接
+
+	    /**
+	     * 使用Druid数据库连接池技术
+	     */
+	    private static DataSource druidDataSource;
+	    static {
+	        try {
+	            Properties properties = new Properties();
+	            InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("druid-config.properties");
+	            properties.load(stream);
+	            druidDataSource = DruidDataSourceFactory.createDataSource(properties);
+	        } catch (Exception e)
+	        {
+	            e.printStackTrace();
+	        }
+	    }
+	    public static Connection getDruidConnection() throws Exception
+	    {
+	        Connection connection = dataSource.getConnection();
+	        return connection;
+	    }
 
 # Apache-DBUtils实现CRUD操作 #
 
@@ -1624,6 +1746,13 @@ Druid是阿里巴巴开源平台上一个数据库连接池实现，它结合了
   - org.apache.commons.dbutils.ResultSetHandler
   - 工具类：org.apache.commons.dbutils.DbUtils   
 - API包说明：
+
+        <!-- commons-dbutils -->
+        <dependency>
+            <groupId>commons-dbutils</groupId>
+            <artifactId>commons-dbutils</artifactId>
+            <version>1.7</version>
+        </dependency>
 
 ![](http://120.77.237.175:9080/photos/jdbc/17.png)
 
@@ -1664,5 +1793,136 @@ Druid是阿里巴巴开源平台上一个数据库连接池实现，它结合了
 	    - public Object query(Connection conn, String sql, ResultSetHandler rsh,Object... params) throws SQLException：执行一个查询操作，在这个查询中，对象数组中的每个元素值被用来作为查询语句的置换参数。该方法会自行处理 PreparedStatement 和 ResultSet 的创建和关闭。
 	    - ...... 
 
+测试插入
+
+    @Test
+    public void update()
+    {
+        Connection connection = null;
+        try{
+            QueryRunner queryRunner = new QueryRunner();
+            connection = JDBCUtils.getDruidConnection();
+            String sql = "insert into customers (`name`,email,birth) values (?,?,?)";
+            int result = queryRunner.update(connection, sql, "三上老师", "ss@gmail.com", "1988-11-02");
+            System.out.println(result);
+        } catch (Exception e){
+            e.printStackTrace();
+        } finally {
+            JDBCUtils.closeResource(connection,null);
+        }
+    }
+
+
 
 ### 9.2.3 ResultSetHandler接口及实现类 ###
+
+- 该接口用于处理 java.sql.ResultSet，将数据按要求转换为另一种形式。
+
+- ResultSetHandler 接口提供了一个单独的方法：Object handle (java.sql.ResultSet .rs)。
+
+- 接口的主要实现类：
+
+  - ArrayHandler：把结果集中的第一行数据转成对象数组。
+  - ArrayListHandler：把结果集中的每一行数据都转成一个数组，再存放到List中。
+  - **BeanHandler：**将结果集中的第一行数据封装到一个对应的JavaBean实例中。
+  - **BeanListHandler：**将结果集中的每一行数据都封装到一个对应的JavaBean实例中，存放到List里。
+  - ColumnListHandler：将结果集中某一列的数据存放到List中。
+  - KeyedHandler(name)：将结果集中的每一行数据都封装到一个Map里，再把这些map再存到一个map里，其key为指定的key。
+  - **MapHandler：**将结果集中的第一行数据封装到一个Map里，key是列名，value就是对应的值。
+  - **MapListHandler：**将结果集中的每一行数据都封装到一个Map里，然后再存放到List
+  - **ScalarHandler：**查询单个值对象
+
+测试
+
+    /*
+     * BeanHander:是ResultSetHandler接口的实现类，用于封装表中的一条记录。
+     */
+    @Test
+    public void queryForBeanHandler()
+    {
+        Connection connection = null;
+        try{
+            QueryRunner queryRunner = new QueryRunner();
+            connection = JDBCUtils.getDruidConnection();
+            String sql = "select name,email,birth from customers where id = ?";
+            BeanHandler<Customer> resultSetHandler = new BeanHandler<>(Customer.class);
+            Object object = queryRunner.query(connection, sql, resultSetHandler, 25);
+            System.out.println(object);
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        } finally {
+            JDBCUtils.closeResource(connection,null);
+        }
+
+    }
+
+    /*
+     * BeanListHandler:是ResultSetHandler接口的实现类，用于封装表中的多条记录构成的集合。
+     */
+    @Test
+    public void queryForBeanListHandler()
+    {
+        Connection connection = null;
+        try{
+            QueryRunner queryRunner = new QueryRunner();
+            connection = JDBCUtils.getDruidConnection();
+            String sql = "select name,email,birth from customers ";
+            BeanListHandler<Customer> beanListHandler = new BeanListHandler<>(Customer.class);
+           List<Customer> list =  queryRunner.query(connection, sql, beanListHandler);
+           list.forEach(System.out::println);
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        } finally {
+            JDBCUtils.closeResource(connection,null);
+        }
+    }
+
+
+    /*
+     * MapHander:是ResultSetHandler接口的实现类，对应表中的一条记录。
+     * 将字段及相应字段的值作为map中的key和value
+     */
+    @Test
+    public void queryForMapHandler()
+    {  Connection connection = null;
+        try{
+            QueryRunner queryRunner = new QueryRunner();
+            connection = JDBCUtils.getDruidConnection();
+            String sql = "select name,email,birth from customers where id =?";
+
+            MapHandler mapHandler = new MapHandler();
+            Map<String, Object> map = queryRunner.query(connection, sql, mapHandler,25);
+            System.out.println(map);
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        } finally {
+            JDBCUtils.closeResource(connection,null);
+        }
+    }
+
+
+    /*
+     * MapListHander:是ResultSetHandler接口的实现类，对应表中的多条记录。
+     * 将字段及相应字段的值作为map中的key和value。将这些map添加到List中
+     */
+    @Test
+    public void queryForMapListHandler()
+    {  Connection connection = null;
+        try{
+            QueryRunner queryRunner = new QueryRunner();
+            connection = JDBCUtils.getDruidConnection();
+            String sql = "select name,email,birth from customers";
+
+            MapListHandler mapListHandler = new MapListHandler();
+            List<Map<String, Object>> maps = queryRunner.query(connection, sql, mapListHandler);
+            maps.forEach(System.out::println);
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        } finally {
+            JDBCUtils.closeResource(connection,null);
+        }
+    }

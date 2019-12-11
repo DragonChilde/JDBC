@@ -1,11 +1,10 @@
 package com.jdbc5.transaction;
 
-import com.jdb2.preparedstatement.util.JDBCUtils;
+import com.jdbc2.preparedstatement.util.JDBCUtils;
 
 import com.jdbc.bean.User;
 import org.junit.Test;
 
-import javax.rmi.ssl.SslRMIClientSocketFactory;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

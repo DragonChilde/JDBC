@@ -39,6 +39,9 @@
     <property name="settings.editor.selected.configurable" value="MavenSettings" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.jdbc6.connection.util" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="F:\Code\JDBC\src\test" />
     </key>
@@ -55,82 +58,82 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="JUnit.dbcpTest.getConnection2">
-    <configuration name="TransactionTest.testTransactionSelect" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="JUnit.QueryRunnerTest.queryForMapListHandler">
+    <configuration name="QueryRunnerTest.query" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="JDBC" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.jdbc5.transaction.*" />
+          <option name="PATTERN" value="com.jdbc7.dbutils.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="com.jdbc5.transaction" />
-      <option name="MAIN_CLASS_NAME" value="com.jdbc5.transaction.TransactionTest" />
-      <option name="METHOD_NAME" value="testTransactionSelect" />
+      <option name="PACKAGE_NAME" value="com.jdbc7.dbutils" />
+      <option name="MAIN_CLASS_NAME" value="com.jdbc7.dbutils.QueryRunnerTest" />
+      <option name="METHOD_NAME" value="query" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="c3p0Test.getConnection1" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="QueryRunnerTest.queryForBeanListHandler" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="JDBC" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.jdbc6.connection.*" />
+          <option name="PATTERN" value="com.jdbc7.dbutils.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="com.jdbc6.connection" />
-      <option name="MAIN_CLASS_NAME" value="com.jdbc6.connection.c3p0Test" />
-      <option name="METHOD_NAME" value="getConnection1" />
+      <option name="PACKAGE_NAME" value="com.jdbc7.dbutils" />
+      <option name="MAIN_CLASS_NAME" value="com.jdbc7.dbutils.QueryRunnerTest" />
+      <option name="METHOD_NAME" value="queryForBeanListHandler" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="c3p0Test.getConnection2" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="QueryRunnerTest.queryForMapHandler" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="JDBC" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.jdbc6.connection.*" />
+          <option name="PATTERN" value="com.jdbc7.dbutils.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="com.jdbc6.connection" />
-      <option name="MAIN_CLASS_NAME" value="com.jdbc6.connection.c3p0Test" />
-      <option name="METHOD_NAME" value="getConnection2" />
+      <option name="PACKAGE_NAME" value="com.jdbc7.dbutils" />
+      <option name="MAIN_CLASS_NAME" value="com.jdbc7.dbutils.QueryRunnerTest" />
+      <option name="METHOD_NAME" value="queryForMapHandler" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="dbcpTest.getConnction1" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="QueryRunnerTest.queryForMapListHandler" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="JDBC" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.jdbc6.connection.*" />
+          <option name="PATTERN" value="com.jdbc7.dbutils.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="com.jdbc6.connection" />
-      <option name="MAIN_CLASS_NAME" value="com.jdbc6.connection.dbcpTest" />
-      <option name="METHOD_NAME" value="getConnction1" />
+      <option name="PACKAGE_NAME" value="com.jdbc7.dbutils" />
+      <option name="MAIN_CLASS_NAME" value="com.jdbc7.dbutils.QueryRunnerTest" />
+      <option name="METHOD_NAME" value="queryForMapListHandler" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="dbcpTest.getConnection2" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="QueryRunnerTest.update" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="JDBC" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.jdbc6.connection.*" />
+          <option name="PATTERN" value="com.jdbc7.dbutils.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="com.jdbc6.connection" />
-      <option name="MAIN_CLASS_NAME" value="com.jdbc6.connection.dbcpTest" />
-      <option name="METHOD_NAME" value="getConnection2" />
+      <option name="PACKAGE_NAME" value="com.jdbc7.dbutils" />
+      <option name="MAIN_CLASS_NAME" value="com.jdbc7.dbutils.QueryRunnerTest" />
+      <option name="METHOD_NAME" value="update" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -138,11 +141,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.dbcpTest.getConnection2" />
-        <item itemvalue="JUnit.c3p0Test.getConnection2" />
-        <item itemvalue="JUnit.dbcpTest.getConnction1" />
-        <item itemvalue="JUnit.c3p0Test.getConnection1" />
-        <item itemvalue="JUnit.TransactionTest.testTransactionSelect" />
+        <item itemvalue="JUnit.QueryRunnerTest.queryForMapListHandler" />
+        <item itemvalue="JUnit.QueryRunnerTest.queryForMapHandler" />
+        <item itemvalue="JUnit.QueryRunnerTest.queryForBeanListHandler" />
+        <item itemvalue="JUnit.QueryRunnerTest.query" />
+        <item itemvalue="JUnit.QueryRunnerTest.update" />
       </list>
     </recent_temporary>
   </component>
@@ -159,6 +162,7 @@
       <workItem from="1574920835804" duration="9217000" />
       <workItem from="1575450767703" duration="27529000" />
       <workItem from="1575856721912" duration="17500000" />
+      <workItem from="1576030103017" duration="11560000" />
     </task>
     <servers />
   </component>

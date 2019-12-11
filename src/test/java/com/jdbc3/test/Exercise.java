@@ -1,6 +1,6 @@
 package com.jdbc3.test;
 
-import com.jdb2.preparedstatement.util.JDBCUtils;
+import com.jdbc2.preparedstatement.util.JDBCUtils;
 import org.junit.Test;
 
 import java.sql.Connection;
