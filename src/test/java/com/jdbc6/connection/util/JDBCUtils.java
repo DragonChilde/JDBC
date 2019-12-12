@@ -4,6 +4,7 @@ import com.alibaba.druid.pool.DruidDataSourceFactory;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.dbcp2.BasicDataSourceFactory;
+import org.apache.commons.dbutils.DbUtils;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -172,4 +173,34 @@ public class JDBCUtils {
             e.printStackTrace();
         }
     }
+
+
+
+    public static void closeResourceByDButil(Connection connection, Statement statement, ResultSet resultSet)
+    {
+        /*方法一*/
+       /* try {
+            DbUtils.close(connection);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            DbUtils.close(statement);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            DbUtils.close(resultSet);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }*/
+
+        /*方法二*/
+        DbUtils.closeQuietly(connection);
+        DbUtils.closeQuietly(statement);
+        DbUtils.closeQuietly(resultSet);
+    }
+
 }

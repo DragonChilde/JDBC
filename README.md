@@ -1356,7 +1356,7 @@ JDBC的批量处理语句包括下面三个方法：
 
 ### 四种隔离级别 ###
 
-- 数据库提供的4种事务隔离级别：
+- 数据库提供的4种事务隔离级别(一致性越好,并发性越差)：
 
 	![](http://120.77.237.175:9080/photos/jdbc/14.png)
 - Oracle 支持的 2 种事务隔离级别：**READ COMMITED**, SERIALIZABLE。 Oracle 默认的事务隔离级别为: **READ COMMITED** 。
@@ -1814,7 +1814,7 @@ Druid是阿里巴巴开源平台上一个数据库连接池实现，它结合了
 
 
 
-### 9.2.3 ResultSetHandler接口及实现类 ###
+### ResultSetHandler接口及实现类 ###
 
 - 该接口用于处理 java.sql.ResultSet，将数据按要求转换为另一种形式。
 
@@ -1925,4 +1925,119 @@ Druid是阿里巴巴开源平台上一个数据库连接池实现，它结合了
         } finally {
             JDBCUtils.closeResource(connection,null);
         }
+    }
+
+
+    /*
+	 * 如何查询类似于最大的，最小的，平均的，总和，个数相关的数据
+     * ScalarHandler:用于查询特殊值
+     */
+    @Test
+    public void queryForScalarHandlerToCount()
+    {
+        Connection connection = null;
+        try{
+            QueryRunner queryRunner = new QueryRunner();
+            connection = JDBCUtils.getDruidConnection();
+            String sql = "select count(*) from customers";
+
+            ScalarHandler scalarHandler = new ScalarHandler<>();
+            Object count = queryRunner.query(connection, sql, scalarHandler);
+            System.out.println(count);
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        } finally {
+            JDBCUtils.closeResource(connection,null);
+        }
+    }
+
+    @Test
+    public void queryForScalarHandlerToMax()
+    {
+        Connection connection = null;
+        try{
+            QueryRunner queryRunner = new QueryRunner();
+            connection = JDBCUtils.getDruidConnection();
+            String sql = "select max(birth) from customers";
+
+            ScalarHandler scalarHandler = new ScalarHandler<>();
+            Object max = queryRunner.query(connection, sql, scalarHandler);
+            System.out.println(max);
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        } finally {
+            JDBCUtils.closeResource(connection,null);
+        }
+    }
+
+	  /*
+     * 自定义ResultSetHandler的实现类
+     */
+    @Test
+    public void queryForDefineResultSetHandler()
+    {
+        Connection connection = null;
+        try{
+            QueryRunner queryRunner = new QueryRunner();
+            connection = JDBCUtils.getDruidConnection();
+            String sql = "select id,name,email,birth from customers where id =?";
+
+
+            ResultSetHandler<Customer> resultSetHandler = new ResultSetHandler<Customer>(){
+                @Override
+                public Customer handle(ResultSet resultSet) throws SQLException {
+
+                    Customer customer = null;
+                    while (resultSet.next()){
+                        Integer id = resultSet.getInt("id");
+                        String name = resultSet.getString("name");
+                        String emial = resultSet.getString("email");
+                        Date birth = resultSet.getDate("birth");
+                         customer = new Customer(id,name, emial, birth);
+                    }
+                    return customer;
+                }
+            };
+            Customer customer = queryRunner.query(connection, sql, resultSetHandler,26);
+            System.out.println(customer);
+			/**Customer{id=26, name='三上老师', email='ss@gmail.com', birth=1988-11-02}**/
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        } finally {
+            JDBCUtils.closeResource(connection,null);
+        }
+    }
+
+
+ 	/*
+     * DbUtils关闭资源方法,方法一和方法二都一样,只是方法一内部没有try catch
+     */
+	public static void closeResourceByDButil(Connection connection, Statement statement, ResultSet resultSet)
+    {
+        /*方法一*/
+       /* try {
+            DbUtils.close(connection);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            DbUtils.close(statement);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            DbUtils.close(resultSet);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }*/
+
+        /*方法二*/
+        DbUtils.closeQuietly(connection);
+        DbUtils.closeQuietly(statement);
+        DbUtils.closeQuietly(resultSet);
     }

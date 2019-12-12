@@ -58,8 +58,8 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="JUnit.QueryRunnerTest.queryForMapListHandler">
-    <configuration name="QueryRunnerTest.query" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="JUnit.QueryRunnerTest.queryForDefineResultSetHandler">
+    <configuration name="QueryRunnerTest.queryForDefineResultSetHandler" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="JDBC" />
       <extension name="coverage">
         <pattern>
@@ -69,23 +69,7 @@
       </extension>
       <option name="PACKAGE_NAME" value="com.jdbc7.dbutils" />
       <option name="MAIN_CLASS_NAME" value="com.jdbc7.dbutils.QueryRunnerTest" />
-      <option name="METHOD_NAME" value="query" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="QueryRunnerTest.queryForBeanListHandler" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="JDBC" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.jdbc7.dbutils.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.jdbc7.dbutils" />
-      <option name="MAIN_CLASS_NAME" value="com.jdbc7.dbutils.QueryRunnerTest" />
-      <option name="METHOD_NAME" value="queryForBeanListHandler" />
+      <option name="METHOD_NAME" value="queryForDefineResultSetHandler" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -123,7 +107,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="QueryRunnerTest.update" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="QueryRunnerTest.queryForScalarHandlerToCount" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="JDBC" />
       <extension name="coverage">
         <pattern>
@@ -133,7 +117,23 @@
       </extension>
       <option name="PACKAGE_NAME" value="com.jdbc7.dbutils" />
       <option name="MAIN_CLASS_NAME" value="com.jdbc7.dbutils.QueryRunnerTest" />
-      <option name="METHOD_NAME" value="update" />
+      <option name="METHOD_NAME" value="queryForScalarHandlerToCount" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="QueryRunnerTest.queryForScalarHandlerToMax" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="JDBC" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.jdbc7.dbutils.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.jdbc7.dbutils" />
+      <option name="MAIN_CLASS_NAME" value="com.jdbc7.dbutils.QueryRunnerTest" />
+      <option name="METHOD_NAME" value="queryForScalarHandlerToMax" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -141,11 +141,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.QueryRunnerTest.queryForDefineResultSetHandler" />
+        <item itemvalue="JUnit.QueryRunnerTest.queryForScalarHandlerToMax" />
+        <item itemvalue="JUnit.QueryRunnerTest.queryForScalarHandlerToCount" />
         <item itemvalue="JUnit.QueryRunnerTest.queryForMapListHandler" />
         <item itemvalue="JUnit.QueryRunnerTest.queryForMapHandler" />
-        <item itemvalue="JUnit.QueryRunnerTest.queryForBeanListHandler" />
-        <item itemvalue="JUnit.QueryRunnerTest.query" />
-        <item itemvalue="JUnit.QueryRunnerTest.update" />
       </list>
     </recent_temporary>
   </component>
@@ -163,6 +163,8 @@
       <workItem from="1575450767703" duration="27529000" />
       <workItem from="1575856721912" duration="17500000" />
       <workItem from="1576030103017" duration="11560000" />
+      <workItem from="1576116444902" duration="3625000" />
+      <workItem from="1576131192216" duration="946000" />
     </task>
     <servers />
   </component>
